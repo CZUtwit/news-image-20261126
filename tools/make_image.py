@@ -1,15 +1,10 @@
 #!/usr/bin/env python3
-"""Build entry.png for news-image-20261126 v2: The World in One Day — 26 Nov 2026.
+"""Build entry.png for news-image-20261126 v3: The World in One Day — 26 Nov 2026.
 
-Champion-format broadsheet (36 stories, 9 regions, 13 main stories, 4-tier
-HOW SURE, DATE CHECK with earlier- and future-day exclusions, numbers + UTC
-timeline, dotted world map with numbered pins). Follows the 26 Nov #1
-(witty-panda-51) layout: top-3 big cards are parade postponement / 26/11
-anniversary / Gukesh Game 3; ALSO in 2 columns; bigger scenes on the top-3
-cards. Every story was verified first reported on Thursday 26 November 2026
-(UTC) against AP / Reuters / BBC / Al Jazeera / AFP / Guardian / France 24 /
-NPR / The Hindu. The #1's five misdated 25 Nov stories are named in DATE
-CHECK, not repeated. Pure Pillow, no network, deterministic output.
+v3 = v2 + top bar now lists SOURCES and FIELDS (23 sources, 12 fields, as the
+26 Nov #1 does) + the top-3 big cards get a taller scene strip (56px) with
+larger pictograms. Stories, regions, DATE CHECK and ALSO unchanged from v2
+(all verified 26 Nov 2026 UTC). Pure Pillow, no network, deterministic output.
 Run: python3 tools/make_image.py   (writes entry.png at the repo root)
 """
 import os
@@ -276,13 +271,13 @@ def draw_main_card(draw, s, x, y, w, h, big):
     draw.rounded_rectangle([x, y, x + w, y + h], radius=6, fill=CARD,
                            outline=LGREY, width=1)
     # scene strip with pictogram + big number badge (bigger on top-3 cards)
-    sh = 46 if big else 30
+    sh = 56 if big else 30
     draw.rounded_rectangle([x + 1, y + 1, x + w - 1, y + sh], radius=6, fill=CHIP)
     draw.rectangle([x + 1, y + sh - 8, x + w - 1, y + sh], fill=CHIP)
     if big:
-        glyph(draw, field, x + 8, y + 4, x + 52, y + sh - 4, RED)
-        draw.text((x + 58, y + 8), bignum, font=SANS_B(19), fill=RED)
-        draw.text((x + 58, y + 28), place + "  ·  " + field,
+        glyph(draw, field, x + 10, y + 5, x + 64, y + sh - 5, RED)
+        draw.text((x + 70, y + 10), bignum, font=SANS_B(20), fill=RED)
+        draw.text((x + 70, y + 32), place + "  ·  " + field,
                   font=SANS_B(9), fill=GREY)
     else:
         glyph(draw, field, x + 8, y + 5, x + 38, y + sh - 5, RED)
@@ -388,7 +383,7 @@ def main():
     d = ImageDraw.Draw(img)
     # top bar
     d.text((M, 8), "THE WORLD IN ONE DAY", font=SANS_B(13), fill=INK)
-    top = "36 STORIES  ·  9 REGIONS  ·  ALL FROM THU 26 NOV 2026"
+    top = "36 STORIES  ·  9 REGIONS  ·  23 SOURCES  ·  12 FIELDS  ·  ALL FROM THU 26 NOV 2026"
     d.text((W - M - d.textlength(top, font=SANS_B(11)), 10), top, font=SANS_B(11), fill=RED)
     d.line([M, 28, W - M, 28], fill=INK, width=2)
     # masthead
@@ -431,14 +426,14 @@ def main():
     gap = 10
     bw3 = (CW - 2 * gap) / 3
     for i in range(3):
-        draw_main_card(d, MAIN[i], M + i * (bw3 + gap), y0, bw3, 130, big=True)
+        draw_main_card(d, MAIN[i], M + i * (bw3 + gap), y0, bw3, 138, big=True)
     bw5 = (CW - 4 * gap) / 5
     for r in range(2):
-        yy = y0 + 138 + r * 130
+        yy = y0 + 146 + r * 130
         for i in range(5):
             draw_main_card(d, MAIN[3 + r * 5 + i], M + i * (bw5 + gap), yy, bw5, 122, big=False)
     # ALSO list (2 columns)
-    draw_also(d, M, 636, (CW - 10) / 2)
+    draw_also(d, M, 644, (CW - 10) / 2)
     # bottom band: map + date check
     by = 874
     draw_map(d, M, by, 452, 128)
