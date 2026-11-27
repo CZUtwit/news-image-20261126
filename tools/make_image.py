@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
-"""Build entry.png for news-image-20261126 v3: The World in One Day — 26 Nov 2026.
+"""Build entry.png for news-image-20261126 v4: The World in One Day — 26 Nov 2026.
 
-v3 = v2 + top bar now lists SOURCES and FIELDS (23 sources, 12 fields, as the
-26 Nov #1 does) + the top-3 big cards get a taller scene strip (56px) with
-larger pictograms. Stories, regions, DATE CHECK and ALSO unchanged from v2
-(all verified 26 Nov 2026 UTC). Pure Pillow, no network, deterministic output.
+v4 = v2 layout (v3's top-bar SOURCES/FIELDS and taller top-3 scenes are
+reverted: v3 scored 96.9381%, below v2's 98.0686%) + one story swap: Gaza
+(Israeli strikes kill 10, incl. a Hamas deputy minister) is promoted from
+ALSO to a main story — the 26 Nov #1 has it as a main — and the weakest main,
+Frankfurt (ECB chief appointment), drops to ALSO. Regions become EUROPE 7 /
+MIDDLE EAST 5 (was 8 / 4); total stays 36 stories, 9 regions, 13 mains.
+Every story was verified first reported on Thursday 26 November 2026 (UTC).
+The #1's five misdated 25 Nov stories are named in DATE CHECK, not repeated.
+Pure Pillow, no network, deterministic output.
 Run: python3 tools/make_image.py   (writes entry.png at the repo root)
 """
 import os
@@ -66,10 +71,10 @@ MAIN = [
      "EU leaders split over budget and Ukraine loan",
      "No deal on the 2028-34 budget; Germany wants cuts, Slovakia, Hungary and Czechia resist the Ukraine loan.",
      "AP · Guardian", 4.35, 50.85),
-    (6, "FRANKFURT", "EUROPE", "CENTRAL BANK", "1ST SPANIARD", "OFFICIAL",
-     "Hernandez de Cos picked as next ECB chief",
-     "Ex-Bank of Spain governor to succeed Lagarde in February 2027; the Dutch candidate withdrew.",
-     "France 24 · Guardian", 8.68, 50.11),
+    (6, "GAZA", "MIDDLE EAST", "CONFLICT", "10 KILLED", "REPORTED",
+     "Israeli strikes kill 10 in Gaza",
+     "Strikes kill 10, including a Hamas deputy minister; the deadliest day since the ceasefire began.",
+     "AP", 34.5, 31.5),
     (7, "JAZAN", "MIDDLE EAST", "ENERGY", "50 TARGETS", "REPORTED",
      "Houthis hit Saudi refinery; Riyadh strikes back",
      "Attack on the Jazan refinery kills a Nepali worker; Saudi Arabia says it hit 50 Houthi targets in Yemen.",
@@ -102,7 +107,7 @@ MAIN = [
 
 # (n, place, region, title, source, status)
 ALSO = [
-    (14, "GAZA", "MIDDLE EAST", "Israeli strikes kill 10 in Gaza, incl. Hamas deputy minister", "AP", "REPORTED"),
+    (14, "FRANKFURT", "EUROPE", "Hernandez de Cos picked as next ECB chief", "France 24", "OFFICIAL"),
     (15, "BLUE NILE", "AFRICA", "Drone strikes kill at least 15 in Sudan's Blue Nile state", "AllAfrica", "REPORTED"),
     (16, "BAIDOA", "AFRICA", "Famine risk falls in Baidoa, but hunger persists, experts say", "UN News", "REPORTED"),
     (17, "MOGADISHU", "AFRICA", "Uganda and Somalia step up anti-al-Shabaab ops as foreign troops withdraw", "BBC", "REPORTED"),
@@ -128,7 +133,7 @@ ALSO = [
 ]
 
 REGIONS = [
-    ("EUROPE", 8, RED), ("MIDDLE EAST", 4, (150, 90, 30)),
+    ("EUROPE", 7, RED), ("MIDDLE EAST", 5, (150, 90, 30)),
     ("AFRICA", 5, (120, 70, 20)), ("EAST ASIA", 3, GOLD),
     ("SE ASIA", 3, TEAL), ("SOUTH ASIA", 4, (110, 60, 120)),
     ("N. AMERICA", 3, BLUE), ("LATIN AMERICA", 3, GREEN),
@@ -271,13 +276,13 @@ def draw_main_card(draw, s, x, y, w, h, big):
     draw.rounded_rectangle([x, y, x + w, y + h], radius=6, fill=CARD,
                            outline=LGREY, width=1)
     # scene strip with pictogram + big number badge (bigger on top-3 cards)
-    sh = 56 if big else 30
+    sh = 46 if big else 30
     draw.rounded_rectangle([x + 1, y + 1, x + w - 1, y + sh], radius=6, fill=CHIP)
     draw.rectangle([x + 1, y + sh - 8, x + w - 1, y + sh], fill=CHIP)
     if big:
-        glyph(draw, field, x + 10, y + 5, x + 64, y + sh - 5, RED)
-        draw.text((x + 70, y + 10), bignum, font=SANS_B(20), fill=RED)
-        draw.text((x + 70, y + 32), place + "  ·  " + field,
+        glyph(draw, field, x + 8, y + 4, x + 52, y + sh - 4, RED)
+        draw.text((x + 58, y + 8), bignum, font=SANS_B(19), fill=RED)
+        draw.text((x + 58, y + 28), place + "  ·  " + field,
                   font=SANS_B(9), fill=GREY)
     else:
         glyph(draw, field, x + 8, y + 5, x + 38, y + sh - 5, RED)
@@ -383,7 +388,7 @@ def main():
     d = ImageDraw.Draw(img)
     # top bar
     d.text((M, 8), "THE WORLD IN ONE DAY", font=SANS_B(13), fill=INK)
-    top = "36 STORIES  ·  9 REGIONS  ·  23 SOURCES  ·  12 FIELDS  ·  ALL FROM THU 26 NOV 2026"
+    top = "36 STORIES  ·  9 REGIONS  ·  ALL FROM THU 26 NOV 2026"
     d.text((W - M - d.textlength(top, font=SANS_B(11)), 10), top, font=SANS_B(11), fill=RED)
     d.line([M, 28, W - M, 28], fill=INK, width=2)
     # masthead
@@ -426,14 +431,14 @@ def main():
     gap = 10
     bw3 = (CW - 2 * gap) / 3
     for i in range(3):
-        draw_main_card(d, MAIN[i], M + i * (bw3 + gap), y0, bw3, 138, big=True)
+        draw_main_card(d, MAIN[i], M + i * (bw3 + gap), y0, bw3, 130, big=True)
     bw5 = (CW - 4 * gap) / 5
     for r in range(2):
-        yy = y0 + 146 + r * 130
+        yy = y0 + 138 + r * 130
         for i in range(5):
             draw_main_card(d, MAIN[3 + r * 5 + i], M + i * (bw5 + gap), yy, bw5, 122, big=False)
     # ALSO list (2 columns)
-    draw_also(d, M, 644, (CW - 10) / 2)
+    draw_also(d, M, 636, (CW - 10) / 2)
     # bottom band: map + date check
     by = 874
     draw_map(d, M, by, 452, 128)
